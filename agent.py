@@ -46,6 +46,17 @@ class Agent(Player):
                       beta: int,
                       states: List[Board]
                       ) -> Tuple[int, Board]:
+        """
+        Use alpha-beta pruning to speed up minimax
+
+        :param board: to perform the 'minimax' algorithm on
+        :param depth: recursively decrement
+        :param is_max: recursively inverse
+        :param alpha: a
+        :param beta: b
+        :param states: recursively keep track of the path
+        :return: (utility, next_move)
+        """
         if depth == 0:
             return self.__moves_available(board), states[0]
         if self.get_num_of_moves(board, self.opponent_color) == 0:
