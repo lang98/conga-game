@@ -8,13 +8,21 @@ class Agent(Player):
     def __init__(self, c: str, ab_pruning: bool = True):
         Player.__init__(self, c)
         self.ab_pruning = ab_pruning
+        self.pruning_count = 0
+        self.nodes_count = 0
 
     def make_next_move(self, board: Board) -> Board:
+        self.pruning_count = 0
+        self.nodes_count = 0
         if self.ab_pruning:
             evaluation, next_board = self.__mini_max(board, depth=3, is_max=True, states=[])
         else:
             evaluation, next_board = \
                 self.__mini_max_ab(board, depth=3, is_max=True, alpha=-9999, beta=9999, states=[])
+            print('Number of a-b pruning made:', self.pruning_count)
+        print('Number of nodes explored:', self.nodes_count)
+        self.pruning_count = 0
+        self.nodes_count = 0
         return next_board
 
     def __mini_max(self, board: Board, depth: int, is_max: bool, states: List[Board]) -> Tuple[int, Board]:
@@ -28,6 +36,7 @@ class Agent(Player):
         :param states: recursively keep track of the path
         :return: (utility, next_move)
         """
+        self.nodes_count += 1
         if depth == 0:
             return self.__moves_available(board), states[0]
         all_moves = self.get_all_moves(board, self.player_color)
@@ -57,6 +66,7 @@ class Agent(Player):
         :param states: recursively keep track of the path
         :return: (utility, next_move)
         """
+        self.nodes_count += 1
         if depth == 0:
             return self.__moves_available(board), states[0]
         if self.get_num_of_moves(board, self.opponent_color) == 0:
@@ -70,6 +80,7 @@ class Agent(Player):
                 best = max(best, next_state, key=lambda x: x[0])
                 alpha = max(alpha, best[0])
                 if beta <= alpha:
+                    self.pruning_count += 1
                     break
             return best
         else:
@@ -79,6 +90,7 @@ class Agent(Player):
                 best = min(best, next_state, key=lambda x: x[0])
                 beta = min(beta, best[0])
                 if beta <= alpha:
+                    self.pruning_count += 1
                     break
             return best
 

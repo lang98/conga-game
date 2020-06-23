@@ -10,7 +10,7 @@ class Game:
     def play(self):
         turn = 0
         b = Board()
-        agent = Agent('B', 0)
+        agent = Agent('B', False)
         rand_player = RandPlayer('W')
         rounds = 0
 
